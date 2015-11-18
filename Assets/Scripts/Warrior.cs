@@ -11,6 +11,10 @@ public class Warrior : MonoBehaviour {
     Vector3 moveToPosition = Vector3.zero;
 
     public GameObject arrow;
+    Transform targetEnemy = null;
+
+    float deltaAttackTime = 0.0f;
+    public float attackMaxTime = 3.0f;
 
     void Awake() {
         _animator = GetComponent<Animator>();
@@ -27,9 +31,9 @@ public class Warrior : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if (Input.GetKeyDown(KeyCode.A)) {
+        /*if (Input.GetKeyDown(KeyCode.A)) {
             _animator.SetTrigger("attack");
-        }
+        }*/
 
 
         if (Input.GetMouseButton(0)) {
@@ -70,6 +74,57 @@ public class Warrior : MonoBehaviour {
                 arrow.SetActive(false);
             }
             _animator.SetBool("run", false);
+
+            AttackToTarget();
         }
+    }
+
+    void AttackToTarget() {
+        if (targetEnemy == null) {
+            return;
+        }
+
+        if (targetEnemy.gameObject.activeSelf == false) {
+            return;
+        }
+
+        Vector3 dir = targetEnemy.position - transform.position;
+        dir.y = 0.0f;
+        dir.Normalize();
+
+        Quaternion from = transform.rotation;
+        Quaternion to = Quaternion.LookRotation(dir);
+        transform.rotation = Quaternion.Lerp(from, to, rotationSpeed * Time.deltaTime);
+
+        deltaAttackTime += Time.deltaTime;
+
+        if (deltaAttackTime > attackMaxTime) {
+            deltaAttackTime = 0.0f;
+            _animator.SetTrigger("attack");
+        }
+    }
+
+    void OnTriggerEnter(Collider other) {
+        if (other.tag != "Monsters") {
+            return;
+        }
+
+        targetEnemy = other.transform;
+    }
+
+    void OnTriggerExit(Collider other) {
+        if (other.tag != "Monsters") {
+            return;
+        }
+
+        targetEnemy = null;
+    }
+
+    void OnAttack() {
+        if (targetEnemy == null) {
+            return;
+        }
+
+        targetEnemy.SendMessage("OnDamage", SendMessageOptions.RequireReceiver);
     }
 }

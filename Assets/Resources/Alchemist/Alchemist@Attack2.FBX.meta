@@ -1,0 +1,176 @@
+fileFormatVersion: 2
+guid: 2491fbd33cc28b544a1a8587995158c1
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: Bip01 L Finger01
+    100002: Bip01 L Finger11
+    100004: //RootNode
+    100006: tag_zfishpoleend
+    100008: Starter_Set/boots
+    100010: Starter_Set/chest
+    100012: Starter_Set/gloves
+    100014: Bip01 R UpperArm
+    100016: Bip01 L Finger21
+    100018: Bip01 R Clavicle
+    100020: Bip01 L Clavicle
+    100022: Bip01 L UpperArm
+    100024: Bip01 R Finger01
+    100026: Bip01 R Finger11
+    100028: Bip01 R Finger21
+    100030: tag_zfishlureend
+    100032: Starter_Set/face
+    100034: Bip01 L Toe0
+    100036: Bip01 L Foot
+    100038: Bip01 L Calf
+    100040: Bip01 L Thigh
+    100042: Bip01 Spine
+    100044: Bip01 Pelvis
+    100046: Bip01
+    100048: root
+    100050: tag_zfishlure
+    100052: tag_zfishcenter
+    100054: tag_righthand
+    100056: Bip01 R Finger2
+    100058: Bip01 R Finger1
+    100060: Bip01 R Finger0
+    100062: Bip01 R Hand
+    100064: Bip01 R Forearm
+    100066: tag_leftarm
+    100068: tag_lefthand
+    100070: Bip01 L Finger2
+    100072: Bip01 L Finger1
+    100074: Bip01 L Finger0
+    100076: Bip01 L Hand
+    100078: Bip01 L Forearm
+    100080: Bip01 Head
+    100082: Bip01 Neck
+    100084: Bip01 Spine2
+    100086: Bip01 Spine1
+    100088: Bip01 R Toe0
+    100090: Bip01 R Foot
+    100092: Bip01 R Calf
+    100094: Bip01 R Thigh
+    400000: Bip01 L Finger01
+    400002: Bip01 L Finger11
+    400004: //RootNode
+    400006: tag_zfishpoleend
+    400008: Starter_Set/boots
+    400010: Starter_Set/chest
+    400012: Starter_Set/gloves
+    400014: Bip01 R UpperArm
+    400016: Bip01 L Finger21
+    400018: Bip01 R Clavicle
+    400020: Bip01 L Clavicle
+    400022: Bip01 L UpperArm
+    400024: Bip01 R Finger01
+    400026: Bip01 R Finger11
+    400028: Bip01 R Finger21
+    400030: tag_zfishlureend
+    400032: Starter_Set/face
+    400034: Bip01 L Toe0
+    400036: Bip01 L Foot
+    400038: Bip01 L Calf
+    400040: Bip01 L Thigh
+    400042: Bip01 Spine
+    400044: Bip01 Pelvis
+    400046: Bip01
+    400048: root
+    400050: tag_zfishlure
+    400052: tag_zfishcenter
+    400054: tag_righthand
+    400056: Bip01 R Finger2
+    400058: Bip01 R Finger1
+    400060: Bip01 R Finger0
+    400062: Bip01 R Hand
+    400064: Bip01 R Forearm
+    400066: tag_leftarm
+    400068: tag_lefthand
+    400070: Bip01 L Finger2
+    400072: Bip01 L Finger1
+    400074: Bip01 L Finger0
+    400076: Bip01 L Hand
+    400078: Bip01 L Forearm
+    400080: Bip01 Head
+    400082: Bip01 Neck
+    400084: Bip01 Spine2
+    400086: Bip01 Spine1
+    400088: Bip01 R Toe0
+    400090: Bip01 R Foot
+    400092: Bip01 R Calf
+    400094: Bip01 R Thigh
+    4300000: Starter_Set/boots
+    4300002: Starter_Set/chest
+    4300004: Starter_Set/gloves
+    4300006: Starter_Set/face
+    7400000: Take 001
+    9500000: //RootNode
+    11100000: //RootNode
+    13700000: Starter_Set/boots
+    13700002: Starter_Set/chest
+    13700004: Starter_Set/gloves
+    13700006: Starter_Set/face
+  materials:
+    importMaterials: 1
+    materialName: 3
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 2
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 1
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
