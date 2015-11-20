@@ -29,6 +29,7 @@ public class Skeleton : MonoBehaviour {
 
     void OnEnable() {
         damageParticle.SetActive(false);
+        InitSkeleton();
     }
 
 	// Use this for initialization
@@ -43,6 +44,20 @@ public class Skeleton : MonoBehaviour {
         FindPlayer();
     }
 
+    void InitSkeleton() {
+        Renderer[] renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+
+        foreach (Renderer currentRenderer in renderers) {
+            currentRenderer.material.shader = Shader.Find("Legacy Shaders/Diffuse");
+        }
+
+        healthPoint = 5.0f;
+        enemyState = ENEMYSTATE.IDLE;
+        stateTime = 0.0f;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GetComponent<Rigidbody>().useGravity = false;
+    }
+
     Transform target = null;
     void FindPlayer() {
         GameObject findObject = GameObject.FindGameObjectWithTag("Player");
@@ -54,6 +69,7 @@ public class Skeleton : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
         dicState[enemyState]();
 	}
 
@@ -128,6 +144,8 @@ public class Skeleton : MonoBehaviour {
     void Dead() {
         anim.SetBool("dead", true);
         enemyState = ENEMYSTATE.NONE;
+
+        StartCoroutine(DeadProcess());
     }
 
     public float healthPoint = 10;
@@ -151,10 +169,34 @@ public class Skeleton : MonoBehaviour {
     public float fadeOutSpeed = 0.5f;
     public float fadeWaitTime = 2.0f;
 
-    /*IEnumerable DeadProcess() {
+    IEnumerator DeadProcess() {
+        yield return new WaitForSeconds(fadeWaitTime);
+
         Renderer[] renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
 
-        Shader transparentShader = Shader.Find("Transparent/Diffuse");
-        renderers[0].
-    }*/
+        Shader transparentShader = Shader.Find("Legacy Shaders/Transparent/Diffuse");
+        renderers[0].material.shader = transparentShader;
+        //renderers[1].material.shader = transparentShader;
+
+        Color fadeOutColor = Color.white;
+
+        while (fadeOutColor.a > 0.0f) {
+            yield return new WaitForEndOfFrame();
+
+            fadeOutColor.a -= fadeOutSpeed * Time.deltaTime;
+
+            renderers[0].material.color = fadeOutColor;
+            //renderers[1].material.color = fadeOutColor;
+        }
+
+        fadeOutColor.a = 0.0f;
+        renderers[0].material.color = fadeOutColor;
+        //renderers[1].material.color = fadeOutColor;
+
+        enemyState = ENEMYSTATE.NONE;
+        //gameObject.SetActive(false);
+        ObjectPool.instance.PoolObject(gameObject);
+
+        yield return null;
+    }
 }
