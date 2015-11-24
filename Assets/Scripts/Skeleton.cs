@@ -90,6 +90,8 @@ public class Skeleton : MonoBehaviour {
         stateTime = 0.0f;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         GetComponent<Rigidbody>().useGravity = false;
+
+        isKnockBackState = false;
     }
 
     Transform target = null;
@@ -103,6 +105,10 @@ public class Skeleton : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+        if (isKnockBackState == true) {
+            return;
+        }
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         dicState[enemyState]();
 	}
@@ -171,6 +177,14 @@ public class Skeleton : MonoBehaviour {
         }
     }
 
+    void OnAttack() {
+        if (target == null) {
+            return;
+        }
+
+        target.SendMessage("OnDamage", Random.Range(1.0f, 2.0f), SendMessageOptions.RequireReceiver);
+    }
+
     void Damage() {
         enemyState = ENEMYSTATE.IDLE;
     }
@@ -180,6 +194,8 @@ public class Skeleton : MonoBehaviour {
         enemyState = ENEMYSTATE.NONE;
         
         StartCoroutine(DeadProcess());
+
+        target.SendMessage("ResetTarget", SendMessageOptions.DontRequireReceiver);
     }
 
     public float healthPoint = 5.0f;
@@ -242,5 +258,30 @@ public class Skeleton : MonoBehaviour {
         ObjectPool.instance.PoolObject(gameObject);
 
         yield return null;
+    }
+
+    bool isKnockBackState = false;
+
+    public void KnockBack(float explosionForce, Vector3 pos) {
+        isKnockBackState = true;
+        GetComponent<Rigidbody>().useGravity = true;
+        GetComponent<Rigidbody>().AddExplosionForce(explosionForce, pos, 10.0f, 1.0f, ForceMode.Impulse);
+        OnDamage();
+
+        StartCoroutine(DamageOver());
+    }
+
+    IEnumerator DamageOver() {
+        while (true) {
+            yield return new WaitForFixedUpdate();
+
+            if (transform.position.y < 0.0f) {
+                Vector3 tempPos = transform.position;
+                tempPos.y = 0.0f;
+                transform.position = tempPos;
+
+                isKnockBackState = false;
+            }
+        }
     }
 }
