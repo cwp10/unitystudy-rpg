@@ -21,7 +21,7 @@ public class Skeleton : MonoBehaviour {
     Dictionary<ENEMYSTATE, FsmFunc> dicState = new Dictionary<ENEMYSTATE, FsmFunc>();
 
     public GameObject damageParticle;
-
+    
     void Awake() {
         anim = GetComponent<Animator>();
         enemyState = ENEMYSTATE.IDLE;
@@ -30,6 +30,16 @@ public class Skeleton : MonoBehaviour {
     void OnEnable() {
         damageParticle.SetActive(false);
         InitSkeleton();
+
+        if (uiHudBar) {
+            uiHudBar.gameObject.SetActive(true);
+        }
+    }
+
+    void OnDisable() {
+        /*if (uiHudBar) {
+            uiHudBar.gameObject.SetActive(false);
+        }*/
     }
 
 	// Use this for initialization
@@ -42,6 +52,30 @@ public class Skeleton : MonoBehaviour {
         dicState[ENEMYSTATE.DEAD] = Dead;
 
         FindPlayer();
+        StartCoroutine(CreateHpBar());
+    }
+
+    UiHudBar uiHudBar = null;
+    public GameObject hudObject = null;
+
+    IEnumerator CreateHpBar() {
+        while (true) {
+            GameObject uiRootObject = GameObject.FindGameObjectWithTag("UiRoot");
+
+            if (uiRootObject != null) {
+                Transform uiRoot = uiRootObject.transform;
+
+                if (uiRootObject != null) {
+                    GameObject obj = Instantiate(hudObject) as GameObject;
+                    obj.transform.SetParent(uiRoot, false);
+                    uiHudBar = obj.GetComponent<UiHudBar>();
+                    uiHudBar.targetTransform = transform;
+                    obj.SetActive(gameObject.activeSelf);
+                    break;
+                }
+            }
+            yield return new WaitForEndOfFrame();
+        }
     }
 
     void InitSkeleton() {
@@ -144,15 +178,20 @@ public class Skeleton : MonoBehaviour {
     void Dead() {
         anim.SetBool("dead", true);
         enemyState = ENEMYSTATE.NONE;
-
+        
         StartCoroutine(DeadProcess());
     }
 
-    public float healthPoint = 10;
+    public float healthPoint = 5.0f;
+    public float maxHelth = 5.0f;
 
     public void OnDamage() {
         damageParticle.SetActive(true);
         --healthPoint;
+
+        if (uiHudBar) {
+            uiHudBar.UpdateHpBar(healthPoint / maxHelth);
+        }
 
         if (healthPoint > 0) {
             enemyState = ENEMYSTATE.DAMAGE;
@@ -171,6 +210,10 @@ public class Skeleton : MonoBehaviour {
 
     IEnumerator DeadProcess() {
         yield return new WaitForSeconds(fadeWaitTime);
+
+        if (uiHudBar) {
+            uiHudBar.gameObject.SetActive(false);
+        }
 
         Renderer[] renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
 
@@ -195,6 +238,7 @@ public class Skeleton : MonoBehaviour {
 
         enemyState = ENEMYSTATE.NONE;
         //gameObject.SetActive(false);
+
         ObjectPool.instance.PoolObject(gameObject);
 
         yield return null;
