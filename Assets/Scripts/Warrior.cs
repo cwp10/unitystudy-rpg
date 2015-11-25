@@ -1,15 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class Warrior : MonoBehaviour {
 
     Animator _animator;
     Transform _transform;
+    NavMeshAgent _agent;
 
     public float moveSpeed = 5.0f;
     public float rotationSpeed = 10.0f;
-    Vector3 moveToPosition = Vector3.zero;
+    //Vector3 moveToPosition = Vector3.zero;
 
     public GameObject arrow;
     Transform targetEnemy = null;
@@ -21,6 +23,11 @@ public class Warrior : MonoBehaviour {
     public float maxHealth = 10.0f;
 
     public PlayerStateUi playerStateUi = null;
+
+    float skillDeltaTime = 0.0f;
+    public Image buttonSprite = null;
+
+    public bool autoAttack = false;
 
     public List<Transform> monsterList = new List<Transform>();
     public int CompareTransform(Transform value1, Transform value2) {
@@ -35,8 +42,9 @@ public class Warrior : MonoBehaviour {
     void Awake() {
         _animator = GetComponent<Animator>();
         _transform = GetComponent<Transform>();
+        _agent = GetComponent<NavMeshAgent>();
 
-        moveToPosition = _transform.position;
+        //moveToPosition = _transform.position;
     }
 
 	// Use this for initialization
@@ -47,36 +55,60 @@ public class Warrior : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if (Input.GetKeyDown(KeyCode.A)) {
+        /*if (Input.GetKeyDown(KeyCode.A)) {
             DoSkill();
-        }
+        }*/
 
         if (targetEnemy == null) {
             FindBestTarget();
         }
 
-
-        if (Input.GetMouseButton(0)) {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            int groundMask = 1 << LayerMask.NameToLayer("Ground");
-            RaycastHit hitInfo;
-            bool result = Physics.Raycast(ray, out hitInfo, Mathf.Infinity, groundMask);
-
-            if (result) {
-                moveToPosition = hitInfo.point;
-
-                if (arrow) {
-                    arrow.transform.position = moveToPosition;
-                    arrow.SetActive(true);
-                }
-            }
+        if (autoAttack == false) {
+            return;
         }
 
-        MoveProcess();
+        AttackProcess();
+
+
+        /*if (Input.GetMouseButton(0)) {
+            if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() == false) {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                int groundMask = 1 << LayerMask.NameToLayer("Ground");
+                RaycastHit hitInfo;
+                bool result = Physics.Raycast(ray, out hitInfo, Mathf.Infinity, groundMask);
+
+                if (result) {
+                    moveToPosition = hitInfo.point;
+
+                    if (arrow) {
+                        arrow.transform.position = moveToPosition;
+                        arrow.SetActive(true);
+                    }
+                }
+            }
+        }*/
+
+        return;
+        //MoveProcess();
     }
 
-    void MoveProcess() {
+    public void Move(Vector3 dir) {
+        _animator.SetBool("run", true);
+        //_transform.position += dir * moveSpeed * Time.deltaTime;
+        _agent.Move(dir * moveSpeed * Time.deltaTime);
+
+        Quaternion from = _transform.rotation;
+        Quaternion to = Quaternion.LookRotation(dir);
+        _transform.rotation = Quaternion.Lerp(from, to, rotationSpeed * Time.deltaTime);
+    }
+
+    public void SetIdle() {
+        _animator.SetBool("run", false);
+        //moveToPosition = transform.position;
+    }
+
+    /*void MoveProcess() {
         if (Vector3.Distance(_transform.position, moveToPosition) > 0.05f) {
             _animator.SetBool("run", true);
 
@@ -97,7 +129,7 @@ public class Warrior : MonoBehaviour {
 
             AttackToTarget();
         }
-    }
+    }*/
 
     void AttackToTarget() {
         if (targetEnemy == null) {
@@ -191,6 +223,14 @@ public class Warrior : MonoBehaviour {
         }
     }
 
+    void AttackProcess() {
+
+        if (arrow)
+            arrow.SetActive(false);
+        _animator.SetBool("run", false);
+        AttackToTarget();
+    }
+
     void OnAttack() {
         if (targetEnemy == null) {
             return;
@@ -242,11 +282,27 @@ public class Warrior : MonoBehaviour {
             skeleton.KnockBack(explosionForce, transform.position);
         }
 
-        yield return new WaitForSeconds(skillCoolTime);
+        //yield return new WaitForSeconds(skillCoolTime);
+
+        while (skillDeltaTime < skillCoolTime) {
+            skillDeltaTime += Time.deltaTime;
+            buttonSprite.fillAmount = skillDeltaTime / skillCoolTime;
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        skillDeltaTime = 0.0f;
+        buttonSprite.fillAmount = 1.0f;
+
         skillObject.SetActive(false);
     }
 
     public void DoSkill() {
+
+        if (skillObject.activeSelf == true) {
+            return;
+        }
+
         StartCoroutine(SkillProcess());
     }
 }

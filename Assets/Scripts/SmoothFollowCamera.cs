@@ -22,6 +22,10 @@ public class SmoothFollowCamera : MonoBehaviour {
     void Awake() {
         _transform = transform;
     }
+
+    public void BackCamera() {
+        toForward = targetTransform.forward;
+    }
 	
 	void LateUpdate () {
         if (targetTransform == null) {
@@ -43,9 +47,11 @@ public class SmoothFollowCamera : MonoBehaviour {
 
         _transform.position = targetTransform.position;
 
+#if UNITY_EDITOR
         if (Input.GetButtonDown("Fire2")) {
             toForward = targetTransform.forward;
         }
+#endif
 
         lastForward = Vector3.Lerp(lastForward, toForward, smoothChange * Time.deltaTime);
         _transform.position -= lastForward * distance;

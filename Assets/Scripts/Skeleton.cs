@@ -21,14 +21,23 @@ public class Skeleton : MonoBehaviour {
     Dictionary<ENEMYSTATE, FsmFunc> dicState = new Dictionary<ENEMYSTATE, FsmFunc>();
 
     public GameObject damageParticle;
+
+    Transform target = null;
+    NavMeshAgent _agent = null;
     
     void Awake() {
         anim = GetComponent<Animator>();
+        
+        _agent = GetComponent<NavMeshAgent>();
+        _agent.enabled = false;
         enemyState = ENEMYSTATE.IDLE;
     }
 
     void OnEnable() {
-        damageParticle.SetActive(false);
+        if (damageParticle != null) {
+            damageParticle.SetActive(false);
+        }
+            
         InitSkeleton();
 
         if (uiHudBar) {
@@ -53,6 +62,8 @@ public class Skeleton : MonoBehaviour {
 
         FindPlayer();
         StartCoroutine(CreateHpBar());
+
+       
     }
 
     UiHudBar uiHudBar = null;
@@ -92,9 +103,16 @@ public class Skeleton : MonoBehaviour {
         GetComponent<Rigidbody>().useGravity = false;
 
         isKnockBackState = false;
+
+        NavMeshHit hit;
+
+        if (NavMesh.SamplePosition(transform.position, out hit, 99f, NavMesh.AllAreas) == true) {
+            transform.position = hit.position;
+        }
+
+        _agent.enabled = true;
     }
 
-    Transform target = null;
     void FindPlayer() {
         GameObject findObject = GameObject.FindGameObjectWithTag("Player");
 
@@ -149,13 +167,22 @@ public class Skeleton : MonoBehaviour {
             Vector3 dir = target.position - transform.position;
             dir.y = 0.0f;
             dir.Normalize();
-            transform.position += dir * moveSpeed * Time.deltaTime;
+            //transform.position += dir * moveSpeed * Time.deltaTime;
 
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), rotationSpeed * Time.deltaTime);
+
+     
+            _agent.Resume();
+            _agent.updatePosition = true;
+            _agent.SetDestination(target.position);
+     
         } else {
             stateTime = attackStateMaxTime;
             enemyState = ENEMYSTATE.ATTACK;
             anim.SetTrigger("attack");
+
+            _agent.Stop();
+            _agent.updatePosition = false;
         }
     }
 
@@ -202,6 +229,9 @@ public class Skeleton : MonoBehaviour {
     public float maxHelth = 5.0f;
 
     public void OnDamage() {
+        _agent.updatePosition = false;
+        _agent.Stop();
+
         damageParticle.SetActive(true);
         --healthPoint;
 
@@ -275,13 +305,33 @@ public class Skeleton : MonoBehaviour {
         while (true) {
             yield return new WaitForFixedUpdate();
 
-            if (transform.position.y < 0.0f) {
+            if (GetComponent<Rigidbody>().velocity.y == 0) {
                 Vector3 tempPos = transform.position;
                 tempPos.y = 0.0f;
                 transform.position = tempPos;
 
                 isKnockBackState = false;
             }
+        }
+    }
+
+    bool isJump = false;
+
+    void OnCollisionEnter(Collision col) {
+        if (isJump == true && col.gameObject.layer == LayerMask.NameToLayer("Ground")) {
+            isJump = false;
+
+            Vector3 tempPos = transform.position;
+            tempPos.y = 0.0f;
+            transform.position = tempPos;
+
+            isKnockBackState = false;
+        }
+    }
+
+    void OnCollisionExit(Collision col) {
+        if (col.gameObject.layer == LayerMask.NameToLayer("Ground")) {
+            isJump = true;
         }
     }
 }
